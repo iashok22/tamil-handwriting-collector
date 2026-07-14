@@ -76,6 +76,14 @@ class _CollectorPageState extends State<CollectorPage> {
           letterDisplay: _currentLetter,
           imageBytes: bytes,
         );
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Saved!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 1),
+          ),
+        );
       }
       if (!mounted) return;
       _advanceToNextLetter();
@@ -155,8 +163,10 @@ class _CollectorPageState extends State<CollectorPage> {
                             height: 16,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Icon(Icons.arrow_forward),
-                    label: const Text('Next'),
+                        : const Icon(Icons.check),
+                    label: Text(
+                      _canvasController.isEmpty ? 'Skip' : 'Submit',
+                    ),
                   ),
                 ],
               ),

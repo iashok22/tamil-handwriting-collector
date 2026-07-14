@@ -1,0 +1,4 @@
+node_modules/
+.vercel
+flutter_sdk/
+*.log

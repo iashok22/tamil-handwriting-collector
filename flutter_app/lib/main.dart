@@ -61,9 +61,15 @@ class _CollectorPageState extends State<CollectorPage> {
     });
   }
 
-  Future<void> _onNextPressed() async {
+  void _onSkipPressed() {
+    _advanceToNextLetter();
+  }
+
+  Future<void> _onSubmitPressed() async {
     if (_canvasController.isEmpty) {
-      _advanceToNextLetter();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Draw the letter before submitting.')),
+      );
       return;
     }
 
@@ -76,21 +82,20 @@ class _CollectorPageState extends State<CollectorPage> {
           letterDisplay: _currentLetter,
           imageBytes: bytes,
         );
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Saved!'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 1),
-          ),
-        );
       }
       if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Saved!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 1),
+        ),
+      );
       _advanceToNextLetter();
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Upload failed, try Next again: $e')),
+        SnackBar(content: Text('Upload failed, try Submit again: $e')),
       );
     } finally {
       if (mounted) setState(() => _isUploading = false);
@@ -155,8 +160,14 @@ class _CollectorPageState extends State<CollectorPage> {
                     label: const Text('Clear'),
                   ),
                   const SizedBox(width: 12),
+                  OutlinedButton.icon(
+                    onPressed: _isUploading ? null : _onSkipPressed,
+                    icon: const Icon(Icons.skip_next),
+                    label: const Text('Skip'),
+                  ),
+                  const SizedBox(width: 12),
                   FilledButton.icon(
-                    onPressed: _isUploading ? null : _onNextPressed,
+                    onPressed: _isUploading ? null : _onSubmitPressed,
                     icon: _isUploading
                         ? const SizedBox(
                             width: 16,
@@ -164,9 +175,7 @@ class _CollectorPageState extends State<CollectorPage> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.check),
-                    label: Text(
-                      _canvasController.isEmpty ? 'Skip' : 'Submit',
-                    ),
+                    label: const Text('Submit'),
                   ),
                 ],
               ),
